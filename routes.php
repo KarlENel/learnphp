@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\PostController;
 use App\Controllers\PublicController;
 use App\Route;
 
@@ -11,3 +12,11 @@ Route::get('/tech', [PublicController::class, 'tech']);
 
 Route::get('/form', [PublicController::class, 'form']);
 Route::post('/answer', [PublicController::class, 'answer']);
+
+Route::get('/admin/posts', [PostController::class, 'index']);
+Route::get('/admin/posts/create', [PostController::class, 'create']);
+Route::post('/admin/posts', [PostController::class, 'store']);
+Route::get('/admin/posts/show', [PostController::class, 'show']);
+Route::get('/admin/posts/edit', [PostController::class, 'edit']);
+Route::post('/admin/posts/edit', [PostController::class, 'update']);
+Route::get('/admin/posts/delete', [PostController::class, 'destroy']);
