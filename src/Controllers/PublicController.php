@@ -8,6 +8,9 @@ use App\Models\User;
 
 class PublicController {
     public function index() {
+        // setcookie('mycookie', 'is tasty', time() + 30*24*60*60);
+        // $_SESSION['secret'] = 'shhh';
+
         $db = new DB();
         $posts = $db->all('posts', Post::class);
         dump($posts);

@@ -20,3 +20,8 @@ Route::get('/admin/posts/show', [PostController::class, 'show']);
 Route::get('/admin/posts/edit', [PostController::class, 'edit']);
 Route::post('/admin/posts/edit', [PostController::class, 'update']);
 Route::get('/admin/posts/delete', [PostController::class, 'destroy']);
+
+Route::get('/login', [AuthController::class, 'loginform']);
+Route::get('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'registerform']);
+Route::get('/register', [AuthController::class, 'register']);
