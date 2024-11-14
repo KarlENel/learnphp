@@ -4,6 +4,9 @@
 
 <?php foreach($posts as $post): ?>
     <article class="blog-post">
+        <?php if($post->image): ?>
+            <img src="<?=$post->image?>" class="w-100">
+        <?php endif; ?>
         <h2 class="display-5 link-body-emphasis mb-1"><?=$post->title?></h2>
         <p><?=$post->body?></p>
     </article>
