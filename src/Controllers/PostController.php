@@ -14,6 +14,11 @@ class PostController {
         view('posts/create');
     }
     public function store(){
+        $extension = pathinfo($_FILES['image']['tname'], PATHINFO_EXTENSION);
+        dump(microtime() . rand(0,PHP_INT_MAX) . $_FILES['image']['name']);
+        $filename = md5(microtime() . rand(0,PHP_INT_MAX) . $_FILES['image']['name'] . ".$extension");
+        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../../public/uploads/' . $filename);
+        dd($_FILES);
         $post = new Post();
         $post->title = $_POST['title'];
         $post->body = $_POST['body'];
