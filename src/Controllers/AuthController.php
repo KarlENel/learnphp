@@ -1,79 +1,47 @@
-<?php
+<?php 
 
-namespace App;
+namespace App\Controllers;
 
-use PDO;
-use PDOException;
+use App\Models\User;
 
-class DB {
-    private $conn;
+class AuthController {
+    public function loginForm(){
+        view('auth/login');
+    }
 
-    public function __construct()
-    {
-        try {
-            $this->conn = new PDO("sqlite:" . __DIR__ . '/../db.sqlite');
-            // set the PDO error mode to exception
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-            
-
-        } catch(PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
+    public function login(){
+        $user = User::where('email', $_POST['email'])[0] ?? null;
+        if($user && password_verify(md5($_POST['email']) . $_POST['password'] . 'EwYdOCfDMlaAVcqIkLFQnUGoTvBWemjJ', $user->password)){
+            $_SESSION['userId'] = $user->id;
+            redirect('/');
+        } else {
+            redirect('/login');
         }
     }
 
-    public function all($table, $class){
-        $stmt = $this->conn->prepare("SELECT * FROM $table");
-        $stmt->execute();
-        // set the resulting array to associative
-        $stmt->setFetchMode(PDO::FETCH_CLASS, $class);
-        return $stmt->fetchAll();
+
+    public function registerForm(){
+        view('auth/register');
     }
 
-    public function where($table, $class, $fieldName, $fieldValue){
-        $stmt = $this->conn->prepare("SELECT * FROM $table WHERE $fieldName='$fieldValue'");
-        $stmt->execute();
-        // set the resulting array to associative
-        $stmt->setFetchMode(PDO::FETCH_CLASS, $class);
-        return $stmt->fetchAll();
-    }
-
-    public function find($table, $class, $id){
-        $stmt = $this->conn->prepare("SELECT * FROM $table WHERE id=$id");
-        $stmt->execute();
-        // set the resulting array to associative
-        $stmt->setFetchMode(PDO::FETCH_CLASS, $class);
-        return $stmt->fetch();
-    }
-
-    public function insert($table, $fields){
-        $fieldNames = array_keys($fields);
-        $fieldNamesText = implode(', ', $fieldNames);
-        $fieldValuesText = implode("', '", $fields);
-        $sql = "INSERT INTO $table ($fieldNamesText)
-                VALUES ('$fieldValuesText')";
-        // use exec() because no results are returned
-        $this->conn->exec($sql);
-    }
-    public function update($table, $fields, $id){
-        $updateText = '';
-        foreach($fields as $name => $field){
-            $updateText .= "$name='$field',";
+    public function register(){
+        $user = User::where('email', $_POST['email'])[0] ?? null;
+        if($_POST['password'] !== $_POST['password_confirm']){
+            redirect('/register');
+        } else if ($user){
+            redirect('/register');
+        } else {
+            $user = new User();
+            $user->name = $_POST['name'];
+            $user->email = $_POST['email'];
+            $user->password = password_hash(md5($_POST['email']) . $_POST['password'] . 'EwYdOCfDMlaAVcqIkLFQnUGoTvBWemjJ', PASSWORD_BCRYPT);
+            $user->save();
+            redirect('/login');
         }
-        $updateText = substr($updateText,0,-1);
-        $sql = "UPDATE $table SET $updateText WHERE id=$id";
-        // Prepare statement
-        $stmt = $this->conn->prepare($sql);
-      
-        // execute the query
-        $stmt->execute();
-      
     }
-
-    public function delete($table, $id){
-        $sql = "DELETE FROM $table WHERE id=$id";
-
-        // use exec() because no results are returned
-        $this->conn->exec($sql);
+    
+    public function logout(){
+        unset($_SESSION['userId']);
+        redirect('/');
     }
 }
